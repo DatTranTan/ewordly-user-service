@@ -1,15 +1,19 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 
 interface ICourse extends Document {
-  folder: Types.ObjectId; // Tham chiếu đến Folder
-  word: Types.ObjectId;
+  // folder: Types.ObjectId;
+  name: string;
+  description: string;
+  words: Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
 
 const WordSchema: Schema = new Schema({
-  folder: { type: mongoose.Schema.Types.ObjectId, ref: 'Folder', required: true },
-  word: { type: mongoose.Schema.Types.ObjectId, ref: 'Word', required: true },
+  name: { type: String, required: true },
+  description: { type: String, required: false },
+  // folder: { type: mongoose.Schema.Types.ObjectId, ref: 'Folder', required: true },
+  words: [{ type: Schema.Types.ObjectId, ref: 'Word' }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

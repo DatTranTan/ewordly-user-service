@@ -2,6 +2,7 @@ import mongoose, { Document, Schema, Types } from "mongoose";
 
 interface IFolder extends Document {
   user: Types.ObjectId;
+  courses: Types.ObjectId[];
   name: string;
   topic: string;
   image: string;
@@ -10,7 +11,8 @@ interface IFolder extends Document {
 }
 
 const FolderSchema: Schema = new Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  courses: [{ type: Schema.Types.ObjectId, ref: 'Course' }],
   name: { type: String, required: true },
   topic: { type: String, required: true },
   image: { type: String, required: false },

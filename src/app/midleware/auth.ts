@@ -13,6 +13,8 @@ if (!SECRET_KEY) {
 
 const auth = (req: Request, res: Response, next: NextFunction): void => {
   try {
+    console.log(req, '2222222222');
+    
     const authHeader = req.headers["authorization"];
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       res
