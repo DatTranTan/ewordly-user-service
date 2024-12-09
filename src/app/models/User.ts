@@ -7,6 +7,7 @@ interface IUser extends Document {
   password: string;
   phoneNumber: string;
   sex: string;
+  avatar: string;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -15,9 +16,10 @@ interface IUser extends Document {
 const UserSchema: Schema = new Schema({
   email: { type: String, required: true },
   name: { type: String, required: true },
-  password: { type: String, required: false },
+  password: { type: String, required: true },
   phoneNumber: { type: String, required: false },
   sex: { type: String, required: false },
+  avatar: { type: String, required: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

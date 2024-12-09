@@ -7,8 +7,9 @@ interface IWord extends Document {
   audio: string;
   image: string;
   type: string;
-  exampleEn: string;
-  exampleVi: string;
+  topic: string;
+  exEnglish: string;
+  exVietnamese: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,8 +21,9 @@ const WordSchema: Schema = new Schema({
   audio: { type: String, required: true },
   image: { type: String, required: true },
   type: { type: String, required: true },
-  exampleEn: { type: String, required: false },
-  exampleVi: { type: String, required: false },
+  topic: { type: String, required: false },
+  exEnglish: { type: String, required: false },
+  exVietnamese: { type: String, required: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
