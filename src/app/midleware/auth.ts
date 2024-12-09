@@ -25,16 +25,18 @@ const auth = (req: Request, res: Response, next: NextFunction): void => {
       res.status(401).json({ message: "No token provided" });
       return;
     }
-    console.log(token);
+    // console.log(token);
     jwt.verify(token, SECRET_KEY, (err, payload) => {
       if (err) {
         console.log(err);
         return res
           .status(403)
-          .json({ message: "Invalid token with message: " + err.message });
+          .json({ message: err.message });
       }
-      req.body.payload = payload;
-      console.log(`payload: ${JSON.stringify(payload)}`);
+
+      // console.log(`payload: ${JSON.stringify((payload as any).user)}`);
+      res.locals.user = (payload as any).user
+
       next();
     });
   } catch (error) {
