@@ -33,7 +33,13 @@ const getAllFolder = async (userId: string): Promise<IFolder[]> => {
 };
 
 const getFolderById = async (id: string): Promise<IFolder> => {
-  const folder = await Folder.findById(id);
+  const folder = await Folder.findById(id)
+    .populate({
+      path: 'courses',
+      select: 'name description',
+    })
+    .exec();
+
   if (!folder) {
     throw new Error("Không tìm thấy thư mục");
   }

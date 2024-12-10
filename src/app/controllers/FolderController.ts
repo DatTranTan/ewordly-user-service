@@ -23,7 +23,7 @@ class FolderController {
       const { name, topic } = req.body
       const userId = res.locals.user._id
 
-      if (!Types.ObjectId.isValid(res.locals.user._id)) {
+      if (!Types.ObjectId.isValid(userId)) {
         const response = new BaseResponse(4001, "Người dùng không hợp lệ", null);
         res.status(400).json(response);
         return;

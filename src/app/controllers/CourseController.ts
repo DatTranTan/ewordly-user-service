@@ -8,7 +8,8 @@ import {
   getCourseById,
   updateCourse
 } from "../services/CourseService.js";
-import { getFolderById } from "../services/FolderService.js";
+import { checkExistFolder, getFolderById } from "../services/FolderService.js";
+import { checkValidWords } from "../services/WordService.js";
 
 class CourseController {
   public async create(
@@ -18,11 +19,11 @@ class CourseController {
   ): Promise<void> {
     try {
       console.log("Request body: " + JSON.stringify(req.body));
+      const { wordIds } = req.body
 
-      const folder = await getFolderById(req.body.folderId)
-
-      if (!folder) {
-        const response = new BaseResponse(4001, "Không có quyền truy cập", null);
+      const validWords = await checkValidWords(wordIds)
+      if (!validWords) {
+        const response = new BaseResponse(4001, "Không tìm thấy từ", null);
         res.status(400).json(response);
         return;
       }
@@ -48,7 +49,10 @@ class CourseController {
   ): Promise<void> {
     try {
       console.log("Request body: " + JSON.stringify(req.body));
-      const course = await getAllCourse();
+      const { folderId } = req.body
+      const userId = res.locals.user._id
+
+      const course = await getAllCourse(userId, folderId);
 
       const response = new BaseResponse(0o000, "Danh sách học phần", course);
       res.status(200).json(response);
@@ -83,13 +87,22 @@ class CourseController {
   ): Promise<void> {
     try {
       console.log("Request body: " + req.body);
+      const { wordIds } = req.body
+
+      const validWords = await checkValidWords(wordIds)
+      if (!validWords) {
+        const response = new BaseResponse(4001, "Không tìm thấy từ", null);
+        res.status(400).json(response);
+        return;
+      }
+
       const course = await updateCourse(req.body);
       const response = new BaseResponse(
         0o000,
         `Cập nhật ${course.name} thành công`,
         course
       );
-      res.status(200).json('');
+      res.status(200).json(response);
     } catch (error) {
       const response = new BaseResponse(5000, "" + error, null);
       res.status(500).json(response);

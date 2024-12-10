@@ -1,7 +1,9 @@
+import { Types } from "mongoose";
 import Course, { ICourse } from "../models/Course.js";
 import Folder from "../models/Folder.js";
 import Word from "../models/Word.js";
 import CourseDTO from "../models/dto/CourseDTO.js";
+import { checkValidWords } from "./WordService.js";
 
 const createCourse = async (courseDTO: CourseDTO): Promise<ICourse> => {
   const { folderId, name, description, wordIds } = courseDTO;
@@ -11,15 +13,10 @@ const createCourse = async (courseDTO: CourseDTO): Promise<ICourse> => {
     throw new Error('Không tìm thấy thư mục');
   }
 
-  const validWords = await Word.find({ _id: { $in: wordIds } });
-  if (validWords.length !== wordIds.length) {
-    throw new Error('Không tìm thấy từ');
-  }
-
   const course: ICourse = await Course.create({
-    folder: folderId,
     name,
     description,
+    folder: folderId,
     words: wordIds,
   });
 
@@ -29,8 +26,22 @@ const createCourse = async (courseDTO: CourseDTO): Promise<ICourse> => {
   return course;
 };
 
-const getAllCourse = async (): Promise<ICourse[]> => {
-  const courses = await Course.find({});
+const getAllCourse = async (userId: string, folderId: string): Promise<ICourse[]> => {
+  if (!folderId || !Types.ObjectId.isValid(folderId as string)) {
+    throw new Error("Không tìm thấy thư mục");
+  }
+
+  const folder = await Folder.findOne({ _id: folderId, user: userId });
+  if (!folder) {
+    throw new Error("Không tìm thấy thư mục");
+  }
+
+  const courses = await Course.find({ folder: folderId })
+  // .populate({
+  //   path: 'words',
+  //   select: 'word meaning phonetic audio image type topic exEnglish exVietnamese',
+  // })
+  // .exec();
   return courses;
 };
 
@@ -65,12 +76,11 @@ const updateCourse = async (courseDTO: CourseDTO): Promise<ICourse> => {
     }
   }
 
-  // course.set(courseDTO);
-  if (name) course.name = name;
-  if (description) course.description = description;
-  if (wordIds) course.words = wordIds;
+  // if (name) course.name = name;
+  // if (description) course.description = description;
+  // if (wordIds) course.words = wordIds;
 
-  await course.save();
+  await course.set(courseDTO);
   return course;
 };
 

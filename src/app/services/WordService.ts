@@ -31,6 +31,14 @@ const checkExistWord = async (word: string): Promise<IWord | null> => {
   }
 };
 
+const checkValidWords = async (wordIds: string[]): Promise<IWord[] | null> => {
+  const validWords = await Word.find({ _id: { $in: wordIds } });
+  if (validWords.length !== wordIds.length) {
+    return null
+  }
+  return validWords
+};
+
 const updateWord = async (wordDTO: WordDTO): Promise<IWord> => {
   const word = await Word.findById(wordDTO.id);
 
@@ -58,4 +66,5 @@ export {
   deleteWord,
   getAllWord,
   checkExistWord,
+  checkValidWords
 };
