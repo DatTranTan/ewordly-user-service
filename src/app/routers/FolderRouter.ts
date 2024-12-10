@@ -8,6 +8,6 @@ router.post("/", auth, FolderController.create);
 router.get("/", auth, FolderController.get);
 router.put("/", auth, FolderController.update);
 router.delete("/", auth, FolderController.delete);
-// router.get("/", FolderController.getAll);
+router.get("/:id", FolderController.getDetail);
 
 export default router;

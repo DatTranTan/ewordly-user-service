@@ -13,27 +13,24 @@ if (!SECRET_KEY) {
 
 const auth = (req: Request, res: Response, next: NextFunction): void => {
   try {
-    console.log(req, '2222222222');
-    
     const authHeader = req.headers["authorization"];
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       res
         .status(401)
-        .json({ message: "No token provided or invalid token format" });
+        .json({ message: "Không xác thực được người dùng" });
       return;
     }
     const token = authHeader && authHeader.split(" ")[1];
     if (token == null) {
-      res.status(401).json({ message: "No token provided" });
+      res.status(401).json({ message: "Không xác thực được người dùng" });
       return;
     }
     // console.log(token);
     jwt.verify(token, SECRET_KEY, (err, payload) => {
       if (err) {
-        console.log(err);
         return res
           .status(403)
-          .json({ message: err.message });
+          .json({ message: 'Không xác thực được người dùng' });
       }
 
       // console.log(`payload: ${JSON.stringify((payload as any).user)}`);
