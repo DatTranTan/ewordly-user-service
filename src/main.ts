@@ -1,5 +1,6 @@
 import express, { Express } from "express";
 import bodyParser from "body-parser";
+import cors from 'cors';
 import "./env.ts";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -10,7 +11,7 @@ global.__filename = fileURLToPath(import.meta.url);
 global.__dirname = dirname(__filename);
 
 const app: Express = express();
-
+app.use(cors());
 // Connect to MongoDB
 connectDb();
 // Sử dụng body-parser để xử lý các request body

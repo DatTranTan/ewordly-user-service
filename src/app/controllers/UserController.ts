@@ -63,13 +63,13 @@ class UserController {
     try {
       const user = await getUserByEmail(req.body.email);
       if (user === null) {
-        const response = new BaseResponse(4002, "User not found", null);
+        const response = new BaseResponse(4002, "Sai tên đăng nhập", null);
         res.status(401).json(response);
         return;
       }
       const isPasswordValid = await user.comparePassword(req.body.password);
       if (!isPasswordValid) {
-        const response = new BaseResponse(4002, "Invalid password", null);
+        const response = new BaseResponse(4002, "Sai mật khẩu", null);
         res.status(401).json(response);
         return;
       }
@@ -82,7 +82,7 @@ class UserController {
       };
       const response = new BaseResponse(
         0o000,
-        "Login successfully",
+        "Đăng nhập thành công",
         responseData
       );
       res.status(200).json(response);

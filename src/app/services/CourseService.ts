@@ -3,14 +3,13 @@ import Course, { ICourse } from "../models/Course.js";
 import Folder from "../models/Folder.js";
 import Word from "../models/Word.js";
 import CourseDTO from "../models/dto/CourseDTO.js";
-import { checkValidWords } from "./WordService.js";
 
 const createCourse = async (courseDTO: CourseDTO): Promise<ICourse> => {
   const { folderId, name, description, wordIds } = courseDTO;
 
   const folder = await Folder.findById(folderId);
   if (!folder) {
-    throw new Error('Không tìm thấy thư mục');
+    throw new Error("Không tìm thấy thư mục");
   }
 
   const course: ICourse = await Course.create({
@@ -26,7 +25,10 @@ const createCourse = async (courseDTO: CourseDTO): Promise<ICourse> => {
   return course;
 };
 
-const getAllCourse = async (userId: string, folderId: string): Promise<ICourse[]> => {
+const getAllCourse = async (
+  userId: string,
+  folderId: string
+): Promise<ICourse[]> => {
   if (!folderId || !Types.ObjectId.isValid(folderId as string)) {
     throw new Error("Không tìm thấy thư mục");
   }
@@ -36,7 +38,9 @@ const getAllCourse = async (userId: string, folderId: string): Promise<ICourse[]
     throw new Error("Không tìm thấy thư mục");
   }
 
-  const courses = await Course.find({ folder: folderId })
+  const courses = await Course.find({ folder: folderId }).sort({
+    createdAt: -1,
+  });
   // .populate({
   //   path: 'words',
   //   select: 'word meaning phonetic audio image type topic exEnglish exVietnamese',
@@ -48,8 +52,9 @@ const getAllCourse = async (userId: string, folderId: string): Promise<ICourse[]
 const getCourseById = async (id: string): Promise<ICourse> => {
   const course = await Course.findById(id)
     .populate({
-      path: 'words',
-      select: 'word meaning phonetic audio image type topic exEnglish exVietnamese',
+      path: "words",
+      select:
+        "word meaning phonetic audio image type topic exEnglish exVietnamese",
     })
     .exec();
 
@@ -60,9 +65,8 @@ const getCourseById = async (id: string): Promise<ICourse> => {
   return course;
 };
 
-
 const updateCourse = async (courseDTO: CourseDTO): Promise<ICourse> => {
-  const { id, folderId, name, description, wordIds } = courseDTO;
+  const { id, name, description, wordIds } = courseDTO;
 
   const course = await Course.findById(id);
   if (!course) {
@@ -76,11 +80,11 @@ const updateCourse = async (courseDTO: CourseDTO): Promise<ICourse> => {
     }
   }
 
-  // if (name) course.name = name;
-  // if (description) course.description = description;
-  // if (wordIds) course.words = wordIds;
+  if (name) course.name = name;
+  if (description) course.description = description;
+  if (wordIds) course.words = wordIds;
 
-  await course.set(courseDTO);
+  await course.save();
   return course;
 };
 
@@ -94,6 +98,9 @@ const deleteCourse = async (id: string): Promise<ICourse> => {
 };
 
 export {
-  createCourse, deleteCourse, getAllCourse, getCourseById, updateCourse
+  createCourse,
+  deleteCourse,
+  getAllCourse,
+  getCourseById,
+  updateCourse,
 };
-

@@ -2,24 +2,26 @@ import mongoose, { Types } from "mongoose";
 import Folder, { IFolder } from "../models/Folder.js";
 import FolderDTO from "../models/dto/FolderDTO.js";
 
-
 const getUserFolders = async (userId: string): Promise<IFolder[]> => {
   if (!userId) {
-    throw new Error('Không có quyền truy cập');
+    throw new Error("Không có quyền truy cập");
   }
 
-  const folders = await Folder.find({ user: userId });
+  const folders = await Folder.find({ user: userId }).sort({ createdAt: -1 });
   return folders;
 };
 
-const createFolder = async (folderDTO: FolderDTO, userId: string): Promise<IFolder> => {
+const createFolder = async (
+  folderDTO: FolderDTO,
+  userId: string
+): Promise<IFolder> => {
   const { name, topic, image } = folderDTO;
 
   const folder = new Folder({
     user: new Types.ObjectId(userId),
     name: name,
     topic: topic,
-    image: image
+    image: image,
   });
 
   await folder.save();
@@ -35,8 +37,9 @@ const getAllFolder = async (userId: string): Promise<IFolder[]> => {
 const getFolderById = async (id: string): Promise<IFolder> => {
   const folder = await Folder.findById(id)
     .populate({
-      path: 'courses',
-      select: 'name description',
+      path: "courses",
+      select: "name description words createdAt",
+      options: { sort: { createdAt: -1 } },
     })
     .exec();
 
@@ -46,25 +49,35 @@ const getFolderById = async (id: string): Promise<IFolder> => {
   return folder;
 };
 
-const checkDuplicateFolder = async (name: string, topic: string, userId: string): Promise<boolean> => {
+const checkDuplicateFolder = async (
+  name: string,
+  topic: string,
+  userId: string
+): Promise<boolean> => {
   const existFolder = await Folder.findOne({ name, topic, user: userId });
   return existFolder ? true : false;
 };
 
 const checkExistFolder = async (id: string): Promise<boolean> => {
   const existFolder = await Folder.exists({ _id: id });
-  return existFolder ? true : false
+  return existFolder ? true : false;
 };
 
-const updateFolder = async (folderDTO: FolderDTO, userId: string): Promise<IFolder> => {
+const updateFolder = async (
+  folderDTO: FolderDTO,
+  userId: string
+): Promise<IFolder> => {
   const { id } = folderDTO;
 
   const folder = await Folder.findOne({ _id: id, user: userId });
 
-  if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(userId) || !folder) {
+  if (
+    !mongoose.Types.ObjectId.isValid(id) ||
+    !mongoose.Types.ObjectId.isValid(userId) ||
+    !folder
+  ) {
     throw new Error("Không tìm thấy thư mục hoặc không có quyền truy cập");
   }
-
 
   folder.set(folderDTO);
 
@@ -82,9 +95,12 @@ const deleteFolder = async (id: string): Promise<IFolder> => {
 };
 
 export {
-  checkDuplicateFolder, checkExistFolder, createFolder,
+  checkDuplicateFolder,
+  checkExistFolder,
+  createFolder,
   deleteFolder,
   getAllFolder,
-  getFolderById, getUserFolders, updateFolder
+  getFolderById,
+  getUserFolders,
+  updateFolder,
 };
-
